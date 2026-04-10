@@ -1,15 +1,16 @@
 {
   "name": "kanjo-pm-toolkit",
-  "description": "Pokemon battle toolkit for Claude Code - damage calculator, pokedex, and team builder",
-  "author": "tommytang0122",
+  "metadata": {
+    "description": "Pokemon battle toolkit for Claude Code - damage calculator, pokedex, and team builder"
+  },
+  "owner": {
+    "name": "tommytang0122"
+  },
   "plugins": [
     {
       "name": "pokemon-toolkit",
-      "path": "plugins/pokemon-toolkit",
-      "description": "AI-powered Pokemon battle tools",
-      "skills": [
-        "pm-dmg-calculator"
-      ]
+      "source": "./plugins/pokemon-toolkit",
+      "description": "AI-powered Pokemon battle tools"
     }
   ]
 }
