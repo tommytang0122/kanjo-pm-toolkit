@@ -5,7 +5,7 @@ Claude Code plugin marketplace for Pokemon battle tools.
 ## Installation
 
 ```bash
-claude /install pokemon-toolkit from tommytang0122/kanjo-pm-toolkit
+claude plugin install --from github:tommytang0122/kanjo-pm-toolkit
 ```
 
 ## Available Plugins
