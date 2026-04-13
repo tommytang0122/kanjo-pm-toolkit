@@ -200,7 +200,63 @@ def write_index_file(all_pokemon, data_dir):
 
 
 def main():
-    pass
+    """Fetch all Pokemon data from PokeAPI and write local .md files."""
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    POKEMON_DIR.mkdir(parents=True, exist_ok=True)
+
+    print("Fetching species list...")
+    species_list = fetch_species_list()
+    total = len(species_list)
+    print(f"Found {total} species.")
+
+    all_pokemon = []
+    errors = []
+
+    def process_species(species_entry):
+        try:
+            return fetch_pokemon_data(species_entry["url"])
+        except Exception as e:
+            return {"error": str(e), "species": species_entry["name"]}
+
+    if tqdm:
+        progress = tqdm(total=total, desc="Fetching Pokemon")
+    else:
+        progress = None
+
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = {
+            executor.submit(process_species, entry): entry
+            for entry in species_list
+        }
+        for future in as_completed(futures):
+            result = future.result()
+            if "error" in result:
+                errors.append(result)
+            else:
+                all_pokemon.append(result)
+                write_pokemon_file(result, POKEMON_DIR)
+            if progress:
+                progress.update(1)
+            elif len(all_pokemon) % 50 == 0:
+                print(f"  {len(all_pokemon) + len(errors)}/{total} processed...")
+
+    if progress:
+        progress.close()
+
+    print(f"\nWriting index.md ({len(all_pokemon)} Pokemon)...")
+    write_index_file(all_pokemon, DATA_DIR)
+
+    if errors:
+        error_log = DATA_DIR / "errors.log"
+        lines = [f"{e['species']}: {e['error']}" for e in errors]
+        error_log.write_text("\n".join(lines), encoding="utf-8")
+        print(f"\n{len(errors)} failures logged to {error_log}:")
+        for e in errors:
+            print(f"  - {e['species']}: {e['error']}")
+    else:
+        print("No errors.")
+
+    print(f"Done. {len(all_pokemon)} Pokemon written to {DATA_DIR}/")
 
 
 if __name__ == "__main__":
