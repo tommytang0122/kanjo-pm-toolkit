@@ -121,6 +121,52 @@ def fetch_species_list():
     return resp.json()["results"]
 
 
+def _format_stats(stats):
+    """Format stats dict into compact string."""
+    return f"HP {stats['hp']} | ATK {stats['atk']} | DEF {stats['def']} | SPA {stats['spa']} | SPD {stats['spd']} | SPE {stats['spe']}"
+
+
+def _format_names(names):
+    """Format multi-language names. Prioritize en, ja-Hrkt, zh-Hant, then rest alphabetically."""
+    priority = ["en", "ja-Hrkt", "ja", "zh-Hant", "zh-Hans", "ko", "fr", "de", "es", "it"]
+    parts = []
+    seen = set()
+    for lang in priority:
+        if lang in names:
+            parts.append(names[lang])
+            seen.add(lang)
+    for lang in sorted(names.keys()):
+        if lang not in seen:
+            parts.append(names[lang])
+    return " / ".join(parts)
+
+
+def format_pokemon_md(data):
+    """Format a Pokemon's full data as a .md string."""
+    lines = []
+    name_str = _format_names(data["names"])
+    lines.append(f"#{data['id']:03d} {name_str}")
+    lines.append(f"Type: {' / '.join(data['types'])} | Gen: {data['generation']}")
+    lines.append(_format_stats(data["stats"]))
+    lines.append(f"Abilities: {', '.join(data['abilities'])}")
+
+    for form in data["forms"]:
+        if form["name"] == "base":
+            continue
+        lines.append("")
+        lines.append(f"[{form['name']}] Type: {' / '.join(form['types'])}")
+        lines.append(_format_stats(form["stats"]))
+        lines.append(f"Abilities: {', '.join(form['abilities'])}")
+
+    base_form = data["forms"][0] if data["forms"] else None
+    if base_form and base_form["moves"]:
+        lines.append("")
+        move_strs = [f"{m['name']} ({m['method']})" for m in base_form["moves"]]
+        lines.append(f"Moves: {', '.join(move_strs)}")
+
+    return "\n".join(lines) + "\n"
+
+
 def main():
     pass
 

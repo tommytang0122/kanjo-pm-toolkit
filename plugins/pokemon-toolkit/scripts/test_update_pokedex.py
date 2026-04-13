@@ -129,3 +129,67 @@ def test_fetch_pokemon_data():
     assert len(result["forms"]) == 2
     assert result["forms"][1]["name"] == "mega-x"
     assert result["forms"][1]["types"] == ["Fire", "Dragon"]
+
+
+from update_pokedex import format_pokemon_md
+
+
+def test_format_pokemon_md_single_form():
+    data = {
+        "id": 25,
+        "names": {"en": "Pikachu", "ja-Hrkt": "ピカチュウ", "zh-Hant": "皮卡丘"},
+        "generation": 1,
+        "types": ["Electric"],
+        "stats": {"hp": 35, "atk": 55, "def": 40, "spa": 50, "spd": 50, "spe": 90},
+        "abilities": ["Static", "Lightning Rod (H)"],
+        "forms": [
+            {
+                "name": "base",
+                "types": ["Electric"],
+                "stats": {"hp": 35, "atk": 55, "def": 40, "spa": 50, "spd": 50, "spe": 90},
+                "abilities": ["Static", "Lightning Rod (H)"],
+                "moves": [
+                    {"name": "Thunder Shock", "method": "lv1"},
+                    {"name": "Thunderbolt", "method": "TM"},
+                ],
+            }
+        ],
+    }
+    result = format_pokemon_md(data)
+    assert "#025 Pikachu / ピカチュウ / 皮卡丘" in result
+    assert "Type: Electric | Gen: 1" in result
+    assert "HP 35 | ATK 55 | DEF 40 | SPA 50 | SPD 50 | SPE 90" in result
+    assert "Abilities: Static, Lightning Rod (H)" in result
+    assert "Thunder Shock (lv1)" in result
+    assert "Thunderbolt (TM)" in result
+
+
+def test_format_pokemon_md_with_forms():
+    data = {
+        "id": 6,
+        "names": {"en": "Charizard", "ja-Hrkt": "リザードン", "zh-Hant": "噴火龍"},
+        "generation": 1,
+        "types": ["Fire", "Flying"],
+        "stats": {"hp": 78, "atk": 84, "def": 78, "spa": 109, "spd": 85, "spe": 100},
+        "abilities": ["Blaze", "Solar Power (H)"],
+        "forms": [
+            {
+                "name": "base",
+                "types": ["Fire", "Flying"],
+                "stats": {"hp": 78, "atk": 84, "def": 78, "spa": 109, "spd": 85, "spe": 100},
+                "abilities": ["Blaze", "Solar Power (H)"],
+                "moves": [{"name": "Flamethrower", "method": "lv46"}],
+            },
+            {
+                "name": "mega-x",
+                "types": ["Fire", "Dragon"],
+                "stats": {"hp": 78, "atk": 130, "def": 111, "spa": 130, "spd": 85, "spe": 100},
+                "abilities": ["Tough Claws"],
+                "moves": [],
+            },
+        ],
+    }
+    result = format_pokemon_md(data)
+    assert "[mega-x] Type: Fire / Dragon" in result
+    assert "HP 78 | ATK 130 | DEF 111 | SPA 130 | SPD 85 | SPE 100" in result
+    assert "Abilities: Tough Claws" in result
