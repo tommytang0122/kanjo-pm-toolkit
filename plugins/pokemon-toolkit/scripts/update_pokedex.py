@@ -181,6 +181,24 @@ def format_index_entry(data):
     return "\n".join(lines)
 
 
+def write_pokemon_file(data, pokemon_dir):
+    """Write a single Pokemon's .md file."""
+    filepath = pokemon_dir / f"{data['id']:03d}.md"
+    content = format_pokemon_md(data)
+    filepath.write_text(content, encoding="utf-8")
+
+
+def write_index_file(all_pokemon, data_dir):
+    """Write the index.md file from all Pokemon data, sorted by ID."""
+    sorted_pokemon = sorted(all_pokemon, key=lambda p: p["id"])
+    lines = ["# Pokedex Index", ""]
+    for data in sorted_pokemon:
+        lines.append(format_index_entry(data))
+        lines.append("")
+    filepath = data_dir / "index.md"
+    filepath.write_text("\n".join(lines), encoding="utf-8")
+
+
 def main():
     pass
 

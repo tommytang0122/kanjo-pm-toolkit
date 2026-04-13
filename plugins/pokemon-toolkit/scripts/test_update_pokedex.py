@@ -237,3 +237,68 @@ def test_format_index_entry_no_extra_forms():
     }
     result = format_index_entry(data)
     assert "Forms:" not in result
+
+
+import tempfile
+from pathlib import Path
+from update_pokedex import write_pokemon_file, write_index_file
+
+
+def test_write_pokemon_file():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        pokemon_dir = Path(tmpdir) / "pokemon"
+        pokemon_dir.mkdir()
+        data = {
+            "id": 25,
+            "names": {"en": "Pikachu", "ja-Hrkt": "ピカチュウ", "zh-Hant": "皮卡丘"},
+            "generation": 1,
+            "types": ["Electric"],
+            "stats": {"hp": 35, "atk": 55, "def": 40, "spa": 50, "spd": 50, "spe": 90},
+            "abilities": ["Static", "Lightning Rod (H)"],
+            "forms": [
+                {
+                    "name": "base",
+                    "types": ["Electric"],
+                    "stats": {"hp": 35, "atk": 55, "def": 40, "spa": 50, "spd": 50, "spe": 90},
+                    "abilities": ["Static", "Lightning Rod (H)"],
+                    "moves": [{"name": "Thunderbolt", "method": "TM"}],
+                }
+            ],
+        }
+        write_pokemon_file(data, pokemon_dir)
+        filepath = pokemon_dir / "025.md"
+        assert filepath.exists()
+        content = filepath.read_text(encoding="utf-8")
+        assert "#025 Pikachu" in content
+
+
+def test_write_index_file():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        data_dir = Path(tmpdir)
+        all_pokemon = [
+            {
+                "id": 1,
+                "names": {"en": "Bulbasaur", "zh-Hant": "妙蛙種子"},
+                "generation": 1,
+                "types": ["Grass", "Poison"],
+                "stats": {"hp": 45, "atk": 49, "def": 49, "spa": 65, "spd": 65, "spe": 45},
+                "abilities": ["Overgrow", "Chlorophyll (H)"],
+                "forms": [{"name": "base", "types": [], "stats": {}, "abilities": [], "moves": []}],
+            },
+            {
+                "id": 4,
+                "names": {"en": "Charmander", "zh-Hant": "小火龍"},
+                "generation": 1,
+                "types": ["Fire"],
+                "stats": {"hp": 39, "atk": 52, "def": 43, "spa": 60, "spd": 50, "spe": 65},
+                "abilities": ["Blaze", "Solar Power (H)"],
+                "forms": [{"name": "base", "types": [], "stats": {}, "abilities": [], "moves": []}],
+            },
+        ]
+        write_index_file(all_pokemon, data_dir)
+        filepath = data_dir / "index.md"
+        assert filepath.exists()
+        content = filepath.read_text(encoding="utf-8")
+        assert "# Pokedex Index" in content
+        assert "#001 Bulbasaur" in content
+        assert "#004 Charmander" in content
