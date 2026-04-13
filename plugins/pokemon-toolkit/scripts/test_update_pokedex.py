@@ -193,3 +193,47 @@ def test_format_pokemon_md_with_forms():
     assert "[mega-x] Type: Fire / Dragon" in result
     assert "HP 78 | ATK 130 | DEF 111 | SPA 130 | SPD 85 | SPE 100" in result
     assert "Abilities: Tough Claws" in result
+
+
+from update_pokedex import format_index_entry
+
+
+def test_format_index_entry():
+    data = {
+        "id": 6,
+        "names": {"en": "Charizard", "ja-Hrkt": "リザードン", "zh-Hant": "噴火龍"},
+        "generation": 1,
+        "types": ["Fire", "Flying"],
+        "stats": {"hp": 78, "atk": 84, "def": 78, "spa": 109, "spd": 85, "spe": 100},
+        "abilities": ["Blaze", "Solar Power (H)"],
+        "forms": [
+            {"name": "base", "types": ["Fire", "Flying"], "stats": {}, "abilities": [], "moves": []},
+            {"name": "mega-x", "types": ["Fire", "Dragon"], "stats": {}, "abilities": [], "moves": []},
+            {"name": "mega-y", "types": ["Fire", "Flying"], "stats": {}, "abilities": [], "moves": []},
+        ],
+    }
+    result = format_index_entry(data)
+    assert "#006" in result
+    assert "Charizard" in result
+    assert "噴火龍" in result
+    assert "Fire / Flying" in result
+    assert "Gen: 1" in result
+    assert "HP 78" in result
+    assert "Blaze" in result
+    assert "Forms: mega-x, mega-y" in result
+
+
+def test_format_index_entry_no_extra_forms():
+    data = {
+        "id": 25,
+        "names": {"en": "Pikachu", "ja-Hrkt": "ピカチュウ", "zh-Hant": "皮卡丘"},
+        "generation": 1,
+        "types": ["Electric"],
+        "stats": {"hp": 35, "atk": 55, "def": 40, "spa": 50, "spd": 50, "spe": 90},
+        "abilities": ["Static", "Lightning Rod (H)"],
+        "forms": [
+            {"name": "base", "types": ["Electric"], "stats": {}, "abilities": [], "moves": []},
+        ],
+    }
+    result = format_index_entry(data)
+    assert "Forms:" not in result

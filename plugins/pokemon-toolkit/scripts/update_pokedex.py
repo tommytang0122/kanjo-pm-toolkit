@@ -167,6 +167,20 @@ def format_pokemon_md(data):
     return "\n".join(lines) + "\n"
 
 
+def format_index_entry(data):
+    """Format a single Pokemon's index entry (compact, one block)."""
+    lines = []
+    name_str = _format_names(data["names"])
+    lines.append(f"#{data['id']:03d} {name_str}")
+    lines.append(f"Type: {' / '.join(data['types'])} | Gen: {data['generation']}")
+    lines.append(_format_stats(data["stats"]))
+    lines.append(f"Abilities: {', '.join(data['abilities'])}")
+    extra_forms = [f["name"] for f in data["forms"] if f["name"] != "base"]
+    if extra_forms:
+        lines.append(f"Forms: {', '.join(extra_forms)}")
+    return "\n".join(lines)
+
+
 def main():
     pass
 
