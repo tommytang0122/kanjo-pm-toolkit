@@ -5,7 +5,7 @@ Claude Code plugin marketplace for Pokemon battle tools.
 ## Installation
 
 ```bash
-claude plugin install --from github:tommytang0122/kanjo-pm-toolkit
+claude /install pokemon-toolkit from tommytang0122/kanjo-pm-toolkit
 ```
 
 ## Available Plugins
@@ -19,7 +19,8 @@ AI-powered Pokemon battle tools. See [plugin README](plugins/pokemon-toolkit/REA
 | Skill | Description | Status |
 |-------|-------------|--------|
 | pm-dmg-calculator | Level 50 damage calculator | Available |
-| pm-pokedex | Pokedex lookup via PokeAPI | Planned |
+| pm-dmg-planner | Battle damage scenario planner (Lv.50 Doubles) | Planned |
+| pm-pokedex-update | Full Pokedex data sync via PokeAPI | Planned |
 | pm-team-builder | Team composition analysis | Planned |
 
 ## Structure
